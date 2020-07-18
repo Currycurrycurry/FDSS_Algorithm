@@ -110,43 +110,17 @@ def heapify(arr, i, heap_size):
         arr[largest], arr[i] = arr[i], arr[largest]
         heapify(arr, largest, heap_size)
 
+def radixSorrt(arr)
+    current_index = 0
+    max_num = max(arr)
+    max_num_len = len(str(max_num))
 
-
-
-
-
-
-
-
-
-
-        
-
-
-
-            
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
+    while current_index < max_num_len:
+        bucket_list = [[] for _ in range(10)]
+        for num in arr:
+            bucket_list[int(num/10**current_index) % 10].append(num)
+        arr.clear()
+        for nums in bucket_list:
+            for num in nums:
+                arr.append(num)
+        current_index += 1
