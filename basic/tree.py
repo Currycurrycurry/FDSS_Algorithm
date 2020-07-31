@@ -56,16 +56,41 @@ def ifExistNode(root, node):
         return True
     return ifExistNode(root.left, node) or ifExistNode(root.right, node)
 
-def hasSubTree(big_tree_root, small_tree_root):
+def hasSubTree(tree1, tree2):
     if tree1 and tree2:
         if tree1.val == tree2.val:
-            return sub_tree(tree1.left, tree2.left) and sub_tree(tree1.right, tree2.right)
+            return hasSubTree(tree1.left, tree2.left) and hasSubTree(tree1.right, tree2.right)
         else:
-            return sub_tree(tree1.left, tree2) or sub_tree(tree1.right, tree2)
+            return hasSubTree(tree1.left, tree2) or hasSubTree(tree1.right, tree2)
     if not tree1 and tree2:
         return False
     return True
 
+maxPath = -float('inf')
+# 后序遍历
+def oneSideMax(root):
+    if not root:
+        return 0
+    left = max(0, oneSideMax(root.left))
+    right = max(0, oneSideMax(root.right))
+    global maxPath
+    maxPath = max(maxPath, left + right + root.val)
+    return max(left, right) + root.val
+
+# 前序遍历
+def buildTree(preorder, preStart, preEnd, inorder, inStart, inEnd, inMap):
+    if preStart > preEnd or inStart > inEnd:
+        return None
+    root = Node(preorder[preStart])
+    inRoot = inMap.get(root.val)
+    numsLeft = inRoot - inStart
+    root.left = buildTree(preorder, preStart + 1, preStart + numsLeft, inorder, inStart, inRoot - 1, inMap)
+    root.right = buildTree(preorder, preStart + numsLeft + 1, preEnd, inorder, inRoot + 1, inEnd, inMap)
+    return root
+
+# 中序遍历 恢复一棵二叉树
+def traverse(node):
+    pass
 
 nodes = [Node(i) for i in range(10)]
 root = nodes[5]

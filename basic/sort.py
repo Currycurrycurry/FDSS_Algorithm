@@ -110,7 +110,7 @@ def heapify(arr, i, heap_size):
         arr[largest], arr[i] = arr[i], arr[largest]
         heapify(arr, largest, heap_size)
 
-def radixSorrt(arr)
+def radixSort(arr):
     current_index = 0
     max_num = max(arr)
     max_num_len = len(str(max_num))
