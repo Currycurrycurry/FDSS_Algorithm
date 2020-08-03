@@ -70,7 +70,7 @@ def maxProfit_with_k_1(prices):
     return dp[n-1][0]
 
 # 如何降低动态规划问题的空间复杂度？
-def maxProfit_wuth_k_1_optimized(prices):
+def maxProfit_with_k_1_optimized(prices):
     n = len(prices)
     dp_i_0 = 0
     dp_i_1 = - float('inf')
