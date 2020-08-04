@@ -1,6 +1,3 @@
-'''
-树太难了！！！！！！！
-'''
 # 普通二叉树节点 
 class Node:
     def __init__(self, val):
@@ -35,6 +32,41 @@ def build3aryTree(arr):
 def preorder(root):
     return [root.val] + preorder(root.left) + preorder(root.right) if root else []
 
+def preorder_n(root):
+    res = []
+    def helper(root):
+        if root:
+            for child in root.children:
+                res.append(child.val)
+    helper(root)
+    return res
+
+# 迭代前序
+def preorder_loop_n(root):
+    if root:
+        stack = [root]
+        ans = []
+        while stack:
+            node = stack.pop()
+            ans.append(node.val)
+            stack.extend(node.children[::-1])
+        return ans
+    return []
+
+def preorder_loop(root):
+    ans = []
+    if root:
+        stack = [root]
+        while stack:
+            node = stack.pop()
+            ans.append(node.val)
+            if node.right:
+                stack.append(node.right)
+            if node.left:
+                stack.append(node.left)
+    return ans
+
+            
 def mirror_preorder(root):
     return [root.val] + preorder(root.right) + preorder(root.left) if root else []
 
@@ -54,6 +86,7 @@ def isPreorder(nums):
         right_part = True if right == left else isPreorder(nums[left:right])
         return left_part and right_part
     return False
+
 
 def inorder(root):
     return inorder(root.left) + [root.val] + inorder(root.right) if root else []
@@ -162,6 +195,14 @@ def hasSubTree(tree1, tree2):
         return False
     return True
 
+def isSymmetric(root):
+    def isSym(root1, root2):
+        if root1 is None and root2 is None:
+            return True
+        if root1 is None or root2 is None:
+            return False
+        return root1.val == root2.val and isSym(root1.left, root2.right) and isSym(root1.right, root2.left)
+    return isSym(root, root)
 
 maxPath = -float('inf')
 # 后序遍历
@@ -185,9 +226,6 @@ def buildTree(preorder, preStart, preEnd, inorder, inStart, inEnd, inMap):
     root.right = buildTree(preorder, preStart + numsLeft + 1, preEnd, inorder, inRoot + 1, inEnd, inMap)
     return root
 
-# 中序遍历 恢复一棵二叉树
-def traverse(node):
-    pass
 
 # 搜索特定值/特定路径/特定节点问题
 def maxPath(root):
@@ -306,10 +344,65 @@ def findKthNode4(root, k):
 def convertTree2List(root):
     pass
 
-def serializeTree(root):
-    pass
-def deserializeTree(nums):
-    pass
+
+# 根据前序遍历和中序遍历建树
+def buildTreeByPreorderAndInorder(root):
+    if preorder and inorder:
+        root_val = preorder[0]
+        root_index = 0
+        while root_index < len(inorder) and inorder[root_index] != root_val:
+            root_index += 1
+        root = Node(root_val)
+        root.left = buildTree(preorder[1:1+root_index], inorder[:root_index])
+        root.right = buildTree(preorder[root_index+1:], inorder[root_index+1:])
+        return root
+
+# 331. 验证二叉树的前序序列化
+def isValidSerialization(preorder):
+    slots = 1
+    for i in preorder.split(','):
+        if slots == 0:
+            return False
+        slots -= 1
+        if i != '#':
+            slots += 2
+    return slots == 0
+
+# 889. 根据前序和后序遍历构造二叉树
+def buildTreeByPreorderAndPostorder(pre, post):
+    if not pre: return None
+    root = Node(pre[0])
+    if len(pre) == 1: return root
+    L = post.index(pre[1]) + 1
+    root.left = buildTreeByPreorderAndPostorder(pre[1:L+1], post[:L])
+    root.right = buildTreeByPreorderAndPostorder(pre[L+1:], post[L:-1])
+    return root
+
+# (难)LCP 10. 二叉树任务调度
+def minimalExecTime(root):
+        def dfs(root):
+            if root is None:
+                return 0., 0.
+            tc = root.val
+			
+            # 先递归左右子树
+            a, b = dfs(root.left)
+            c, d = dfs(root.right)
+            
+            tc = tc + a + c
+            # 只考虑 a >= c 的情况，不满足就交换
+            if a < c:
+                a, c = c, a
+                b, d = d, b
+            
+            if a - 2 * b <= c:
+                pc = (a + c) / 2
+            else:
+                pc = c + b
+
+            return tc, pc
+        tc, pc = dfs(root)
+        return tc - pc
 
 ######################################TEST######################################
 nodes = [Node(i) for i in range(10)]
