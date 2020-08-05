@@ -1,11 +1,11 @@
-# 普通二叉树节点 
+# 普通二叉树节点-Node
 class Node:
     def __init__(self, val):
         self.left = None
         self.right = None
         self.val = val
 
-# 有父节点的二叉树节点
+# 有父节点的二叉树节点-SpecialTreeNode
 class SpecialTreeNode:
     def __init__(self, val):
         self.val = val
@@ -13,18 +13,166 @@ class SpecialTreeNode:
         self.right = None
         self.parent = None
 
-# 三叉树节点
+# 三叉树节点-ThreeNode
 class ThreeNode(Node):
     def __init__(self, val):
         Node.__init__(self, val)
         self.mid = None
 
-# N叉树节点
+# N叉树节点-TreeNNode
 class TreeNNode:
     def __init__(self, val):
         self.val = val
         self.children = []
+
+# 104. 二叉树的最大深度
+def maxDepth(root):
+    return 1 + max(maxDepth(root.left), maxDepth(root.right)) if root else 0
+
+# 98. 验证二叉搜索树-普通递归
+def isValidBST1(root):
+    def dfs(root, lower_bound, upper_bound):
+        if not root:
+            return True
+        return lower_bound < root.val < upper_bound \
+        and dfs(root.left, lower_bound, root.val) \
+        and dfs(root.right, root.val, upper_bound)
+    dfs(root, -float('inf'), float('inf'))
+
+# 98. 验证二叉搜索树-中序递归
+def isValidBST2(root):
+    global pre
+    pre = None
+    if not root:
+        return True
+    if not isValidBST2(root.left):
+        return False
+    global pre
+    if pre is not None and root.val <= pre:
+        return False
+    pre = root.val
+    return isValidBST2(root.right)
+
+# 98. 验证二叉搜索树-中序迭代
+def isValidBST3(root):
+    stack, inorder = [], float('-inf')
+    while stack or root:
+        while root:
+            stack.append(root)
+            root = root.left
+        root = stack.pop()
+        if root.val <= inorder:
+            return False
+        inorder = root.val
+        root = root.right
+    return True
+
+# （难）95. 不同的二叉搜索树（2）
+'''
+时间复杂度：
+卡特兰数：n个点生成的二叉搜索树的数目G(n)
+每棵二叉搜索树建树时间：O(n)
+总时间复杂度为O(n*G(n))
+空间复杂度：
+与时间复杂度相同
+'''
+def generateTrees(n):
+    def generateTree(start, end):
+        if start > end:
+            return [None,]
+        all_trees = []
+        for i in range(start, end+1):
+            left_trees = generateTree(start, i-1)
+            right_trees = generateTree(i+1, end)
+            for l in left_trees:
+                for r in right_trees:
+                    root = Node(i)
+                    root.left = l
+                    root.right = r
+                    all_trees.append(root)
+        return all_trees
+    return generateTree(1, n) if n > 0 else []
+
+# 96. 不同的二叉搜索树的个数(动态规划)
+'''
+假设n个节点存在二叉排序树的个数是G(n)，
+1为根节点，2为根节点，...，n为根节点，
+当1为根节点时，其左子树节点个数为0，右子树节点个数为n-1，
+同理当2为根节点时，其左子树节点个数为1，右子树节点为n-2，
+所以可得G(n) = G(0)*G(n-1)+G(1)*(n-2)+...+G(n-1)*G(0)
+'''
+def numTrees(n):
+    G = [0] * (n+1)
+    G[0], G[1] = 1, 1
+    for i in range(2,n+1):
+        for j in range(n):
+            G[i] += G[j] * G[i-j-1]
+    return G[n]
+
+# 99. 恢复二叉搜索树
+def recoverBST(root):
+    def inorder(root):
+        return inorder(root.left) + [root.val] + inorder(root.right) if root else []
     
+    def findTwoNodes(nums):
+        n = len(nums)
+        x = y = -1
+        for i in range(n - 1):
+            if nums[i+1] < nums[i]:
+                y = nums[i + 1]
+                if x == -1:
+                    x = nums[i]
+                else:
+                    break
+        return [x, y]
+
+    def recover(node_list, root, count):
+        if root:
+            if root.val == node_list[0] or root.val == node_list[1]:
+                root.val = node_list[1] if root.val == node_list[0] else node_list[0]
+                count -= 1
+                if count == 0:
+                    return
+            recover(node_list, root.left, count)
+            recover(node_list, root.right, count)
+    recover(findTwoNodes(inorder(root)), root, 2)
+
+# 993. 二叉树的堂兄弟节点
+def isCousin(root, x, y):
+    def getPath(root, val, path=[]):
+            if not root:
+                return False
+            path.append(root.val)
+            if root.val == val:
+                return True
+            left = getPath(root.left, val, path)
+            right = getPath(root.right, val, path)
+            if left or right:
+                return True
+            path.pop()
+    list1 = []
+    list2 = []
+    getPath(root, x, list1)
+    getPath(root, y, list2)
+    return len(list1) == len(list2) and list1[list1.index(x) - 1] != list2[list2.index(y) - 1]
+
+# 993. 二叉树的堂兄弟节点 只记录parent
+def isCousin2(root, x, y):
+    parent = {}
+    depth = {}
+    def dfs(node, par = None):
+        if node:
+            depth[node.val] = 1 + depth[par.val] if par else 0
+            parent[node.val] = par
+            dfs(node.left, node)
+            dfs(node.right, node)
+    dfs(root)
+    return depth[x] == depth[y] and parent[x] != parent[y]
+
+# 1519. 子树中标签相同的节点数
+def countSubTrees(n, edges, labels):
+    pass
+
 def build3aryTree(arr):
     pass
 
@@ -91,8 +239,31 @@ def isPreorder(nums):
 def inorder(root):
     return inorder(root.left) + [root.val] + inorder(root.right) if root else []
 
+def inorder_normal(root):
+    res = []
+    def dfs(root, res):
+        if root:
+            dfs(root.left, res)
+            res.append(root.val)
+            dfs(root.right, res)
+    dfs(root, res)
+    return res
+
+def inorder_loop(root):
+    stack, res = [], []
+    curr = root
+    while curr is not None or len(stack) > 0:
+        while curr is not None:
+            stack.append(curr)
+            curr = curr.left
+        curr = stack.pop()
+        res.append(curr.val)
+        curr = curr.right
+    return res
+
 def mirror_inorder(root):
     return inorder(root.right) + [root.val] + inorder(root.left) if root else []
+
 
 def isInorder(nums):
     pass
@@ -364,7 +535,7 @@ def isValidSerialization(preorder):
         if slots == 0:
             return False
         slots -= 1
-        if i != '#':
+        if i != '#': 
             slots += 2
     return slots == 0
 
@@ -422,6 +593,8 @@ print('preorder: {}'.format(mirror_preorder(root)))
 print('inorder: {}'.format(mirror_inorder(root)))
 print('postorder: {}'.format(mirror_postorder(root)))
 print('levelorder: {}'.format(mirror_levelorder(root)))
+print('-------------')
+print('max depth is {}'.format(maxDepth(root)))
 nums1 = [1, 4, 3, 7, 6, 5]
 nums2 = [5, 3, 1, 4, 6, 7]
 nums3 = [1, 2, 3, 4, 5, 6, 7]

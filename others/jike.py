@@ -19,21 +19,13 @@ print(test_nums)
 # 盛最多水的容器
 def maxArea(height):
     max_value = 0
-    left_pointer = 0
-    right_pointer = len(height) - 1
-    while left_pointer < right_pointer:
-        min_pointer = 0
-        if height[left_pointer] > height[right_pointer]:
-            min_pointer = right_pointer
+    left, right = 0, len(height) - 1
+    while left < right:
+        max_value = max(max_value, (right - left) * min(height[right], height[left]))
+        if height[right] > height[left]:
+            left += 1
         else:
-            min_pointer = left_pointer
-        tmp_value = min(height[left_pointer], height[right_pointer]) * (right_pointer - left_pointer)
-        if tmp_value > max_value:
-            max_value = tmp_value
-        if min_pointer == left_pointer:
-            left_pointer += 1
-        else:
-            right_pointer -= 1
+            right -= 1
     return max_value
 
 height = [1,8,6,2,5,4,8,3,7]
@@ -105,8 +97,16 @@ print(verifyBST(nodes[0]))
 # 算法思路模板全整理 详见summary.md
 
 # Day5 ~ Day7
+def test():
+    return None
 
+import math
+def test():
+    print("hello world")
+    return None
 
+def test_2():
+    if True:
 
     
 
