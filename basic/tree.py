@@ -575,6 +575,23 @@ def minimalExecTime(root):
         tc, pc = dfs(root)
         return tc - pc
 
+# 633 打印二叉树
+def printTree(root):
+    def getHeight(root):
+        return max(getHeight(root.right), getHeight(root.left)) + 1 if root else 0
+    def fill(res, root, level, left, right):
+        if root:
+            res[level][(left + right) // 2] = str(root.val)
+            fill(res, root.left, level + 1, left, (left + right) // 2)
+            fill(res, root.right, level + 1, (left + right) // 2 + 1, right)
+    height = getHeight(root)
+    width = pow(2, height) - 1
+    res = [[""] * width for i in range(height)]
+    fill(res, root, 0, 0, width - 1)
+    return res
+
+
+
 ######################################TEST######################################
 nodes = [Node(i) for i in range(10)]
 root = nodes[5]
