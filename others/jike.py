@@ -68,7 +68,6 @@ def verifyBST(root):
     def recurse(root, lower, upper):
         if not root:
             return True
-
         val = root.val
         if lower and val <= lower:
             return False

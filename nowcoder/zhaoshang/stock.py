@@ -11,6 +11,26 @@ def maxProfit(prices):
         dp_i_1 = max(dp_i_1, -prices[i])
     return dp_i_0
 
+# nums = list(map(int, input().split()))
+# print(maxProfit(nums))
+
+def maxProfit(prices):
+    if not prices or len(prices) == 1:
+        return 0
+    maxP = [0] * len(prices)
+    minNum = prices[0]
+    
+    if prices[1] > prices[0]:
+        maxP[1] = prices[1] - prices[0]
+    else:
+        minNum = prices[1]
+    
+    for i in range(2, len(prices)):
+        if prices[i] < minNum:
+            minNum = prices[i]
+        maxP[i] = max(maxP[i - 1],prices[i] - minNum)
+    
+    return maxP[len(prices) - 1]
+
 nums = list(map(int, input().split()))
 print(maxProfit(nums))
-

@@ -23,7 +23,17 @@ class ThreeNode(Node):
 class TreeNNode:
     def __init__(self, val):
         self.val = val
-        self.children = []
+        self.chi
+
+# 四叉树节点
+class Tree4Node:
+    def __init__(self, val, isLeaf, topLeft, topRight, bottomLeft, bottomRight):
+        self.val = val
+        self.isLeaf = isLeaf
+        self.topLeft = topLeft
+        self.topRight = topRight
+        self.bottomLeft = bottomLeft
+        self.bottomRight = bottomRight
 
 # 104. 二叉树的最大深度
 def maxDepth(root):
@@ -291,20 +301,41 @@ def isPostorder(nums):
         return left_part and right_part
     return False
 
-def levelorder(root):
-    res = []
-    heap = []
-    heap.append(root)
+def levelorder1(root):
+    if not root:
+        return []
+    heap = [root]
+    ans = []
+    while len(heap) > 0:
+        cnt = len(heap)
+        tmp = []
+        for i in range(cnt):
+            node = heap.pop(0)
+            tmp.append(node.val)
+            if node.left:
+                heap.append(node.left)
+            if node.right:
+                heap.append(node.right)
+        ans.append(tmp)
+    return ans
+
+def levelorder2(root):
+    if not root:
+        return []
+    heap = [root]
+    ans = []
     while len(heap) > 0:
         node = heap.pop(0)
+        ans.append(node.val)
         if node.left:
             heap.append(node.left)
         if node.right:
             heap.append(node.right)
-        res.append(node.val)
-    return res
+    return ans
 
 def mirror_levelorder(root):
+    if not root:
+        return []
     res = []
     heap = []
     heap.append(root)
@@ -317,6 +348,24 @@ def mirror_levelorder(root):
         res.append(node.val)
     return res
 
+def mirror_levelorder2(root):
+    if not root:
+        return []
+    res = []
+    heap = [root]
+    while len(heap) > 0:
+        cnt = len(heap)
+        tmp = []
+        for i in range(cnt):
+            node = heap.pop(0)
+            tmp.append(node.val)
+            if node.right:
+                heap.append(node.right)
+            if node.left:
+                heap.append(node.left)
+        res.append(tmp)
+    return res 
+       
 # 【综合】判断是否是树的前序/后序遍历，并建树
 def buildPreTree(nums):
     if nums:
@@ -589,6 +638,37 @@ def printTree(root):
     res = [[""] * width for i in range(height)]
     fill(res, root, 0, 0, width - 1)
     return res
+
+# 427. 建立四叉树
+def construct(self, grid):
+    if not grid:
+        return Tree4Node(False, False, None, None, None, None)
+    length, val, pure = len(grid), 0, True
+    for line in grid:
+        for n in line:
+            val += n
+            if not n:
+                pure = False
+    if val and pure:
+        return Tree4Node(True, True, None, None, None, None)
+    if val == 0:
+        return Tree4Node(False, True, None, None, None, None)
+    mid = length >> 1
+    tl, tr, bl, br = [], [], [], []
+    for line in grid[:mid]:
+        tl.append(line[:mid])
+        tr.append(line[mid:])
+    for line in grid[mid:]:
+        bl.append(line[:mid])
+        br.append(line[mid:])
+    return Node(val=False, isLeaf=False, 
+    topLeft=self.construct(tl), 
+    topRight=self.construct(tr), 
+    bottomLeft=self.construct(bl), 
+    bottomRight=self.construct(br)
+    )
+    
+
 
 
 
