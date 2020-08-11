@@ -92,21 +92,6 @@ print(preorder(nodes[0]))
 print(verifyBST(nodes[0]))
 
 
-# Day4 学习总结、
-# 算法思路模板全整理 详见summary.md
-
-# Day5 ~ Day7
-def test():
-    return None
-
-import math
-def test():
-    print("hello world")
-    return None
-
-def test_2():
-    if True:
-
     
 
 

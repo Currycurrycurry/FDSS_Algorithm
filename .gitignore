@@ -1,3 +1,7 @@
 .history
 .DS_Store
+.idea
+idea/*
+out
+*.class
 
