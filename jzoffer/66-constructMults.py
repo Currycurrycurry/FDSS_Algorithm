@@ -10,6 +10,15 @@ def constructMults(A):
         B.append(val)
     return B
 
+# normal
+def constructMults(A):
+    sum_value = 1
+    for a in A:
+        sum_value *= a
+    ans = []
+    for a in A:
+        ans.append(sum_value//a)
+
 # O(n)
 def constructMults(A):
     mults = [A[0]]
