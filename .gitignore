@@ -4,4 +4,8 @@
 idea/*
 out
 *.class
+.pdf
+.zip
+.rar
+.doc
 
