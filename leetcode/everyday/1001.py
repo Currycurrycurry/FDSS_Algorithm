@@ -39,18 +39,22 @@ class Solution:
         return cnt
     
     # wrong
+
     def minimumOperations2(self, leaves: str) -> int:
-        dp = [[float('inf')] * len(leaves)] * 3
+        dp = [[999 for _ in range(len(leaves))] for _ in range(3)]
+        print(dp)
         dp[0][0] = int(leaves[0] == 'y')
+        print(dp)
         print(dp[0][0])
-        # dp[1][0] = dp[2][0] = dp[2][1] = float('inf')
         for i in range(1, len(leaves)):
             is_yellow = int(leaves[i] == 'y')
             is_red = int(leaves[i] == 'r')
             dp[0][i] = dp[0][i-1] + is_yellow
+            print(dp[0][i])
             dp[1][i] = min(dp[1][i-1], dp[0][i-1]) + is_red
-            if i >= 2:
-                dp[2][i] = min(dp[2][i-1], dp[1][i-1]) + is_yellow
+            print(dp[1][i])
+            dp[2][i] = min(dp[2][i-1], dp[1][i-1]) + is_yellow
+            print(dp[2][i])
         print(dp)
         return dp[2][-1]
 
@@ -70,4 +74,4 @@ class Solution:
                 f[i][2] = min(f[i - 1][1], f[i - 1][2]) + isYellow
         return f[n - 1][2]
 
-print(Solution().minimumOperations2('rrrr'))
+print(Solution().minimumOperations2('rrr'))
