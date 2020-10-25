@@ -10,3 +10,6 @@ class Solution:
                 result.append(end - start + 1)
                 start = i + 1
         return result
+
+
+        
