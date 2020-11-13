@@ -78,5 +78,17 @@ class Solution:
                     dp[key_index][k] = min(dp[key_index][k], dp[key_index-1][pre_k] + min(abs(pre_k - k), ring_len - abs(k - pre_k)) + 1)
         return min(dp[-1])
 
-
-
+    # buggy
+    def minimumTotal(self, triangle: List[List[int]]) -> int:
+        height = len(triangle)
+        def helper(height_index, col_index):
+            if height_index == height:
+                return 0
+            length = len(triangle[height_index])
+            if col_index < 0 or col_index >= length:
+                return 0
+            if col_index == 0 or triangle[height_index][col_index+1] < triangle[height_index][col_index]:
+                return triangle[height_index][col_index+1] + helper(height_index+1, col_index+1)
+            elif col_index == length - 1 or triangle[height_index][col_index+1] > triangle[height_index][col_index]:
+                return triangle[height_index][col_index] + helper(height_index+1, col_index)
+        return helper(0, 0)
