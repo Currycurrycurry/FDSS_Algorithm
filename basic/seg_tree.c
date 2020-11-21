@@ -67,6 +67,6 @@ int main() {
     for (i = 0; i < 15; i++) {
         printf("tree[%d] = %d\n", i, tree[i]);
     }
-    update_tree(arr, tree, )
+    // update_tree(arr, tree, )
 
 }
