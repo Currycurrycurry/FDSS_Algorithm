@@ -91,6 +91,19 @@ print(maxDepth(nodes[0]))
 print(preorder(nodes[0]))
 print(verifyBST(nodes[0]))
 
+# n = int(input())
+# heights = list(map(int, input().split(" ")))
+# left = 0
+# right = len(heights) - 1
+# res = 0
+# while left < right:
+#     res = max(res, (right - left + 1) * min(heights[left:right+1]))
+#     if heights[left] > heights[right]:
+#         right -= 1
+#     else:
+#         left += 1
+
+# print(res)
 
     
 
