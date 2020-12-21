@@ -11,3 +11,4 @@ class Solution:
             m -= 1
             sum += 2 ** m * max(i.count(1),i.count(0))
         return sum
+    
