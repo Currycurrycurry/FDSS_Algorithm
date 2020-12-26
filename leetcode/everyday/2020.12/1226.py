@@ -1,0 +1,4 @@
+def maximalRectangle(matrix):
+    pass
+    
+    
