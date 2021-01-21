@@ -1,0 +1,3 @@
+import heapq
+
+heapq.heap
