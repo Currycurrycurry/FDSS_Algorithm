@@ -18,4 +18,4 @@ class Solution:
                 root.val = sum_value + root.val
                 helper(root.right)
         helper(root)
-        return root
+        return root                                                                                     
