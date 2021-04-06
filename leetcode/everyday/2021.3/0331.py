@@ -13,4 +13,3 @@ def subsetsWithDup(nums):
     cur = []
     dfs(nums, 0, cur, ans)
     return [list(x) for x in ans]
-    
