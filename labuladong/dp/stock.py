@@ -1,62 +1,23 @@
+# 《用一个状态转移方程秒杀了 6 道股票买卖问题》
 # 状态机
 # DP table
 # 穷举框架：利用状态进行穷举
+# 动态规划算法本质上就是穷举「状态」，然后在「选择」中选择最优解
+# dp 数组的遍历顺序是怎么确定的?主要是根据 base case，以 base case 为起点，逐步向结果靠近。
 # 
 # 
 '''
 状态转移框架
 dp[i][k][0] = max(dp[i-1][k][0], dp[i-1][k][1] + prices[i])
-dp[i][k][1] = max(dp[i-1][k][1], dp[i-1][k][0] - prices[i])
+dp[i][k][1] = max(dp[i-1][k][1], dp[i-1][k-1][0] - prices[i])
 '''
 '''
 base case:
 
-dp[-1][k][0] = dp[i][0][0 = 0
+dp[-1][k][0] = dp[i][0][0] = 0
 dp[-1][k][1] = dp[i][0][1] = -infinity
 '''
-
-def maxProfit_k_inf(prices):
-    '''
-    dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i])
-    dp[i][1] = max(dp[i-1][1], dp[i-1][0] - prices[i])
-    '''
-    n = len(prices)
-    dp_i_0 = 0
-    dp_i_1 = - float('inf')
-    for i in range(n):
-        temp = dp_i_0
-        dp_i_0 = max(dp_i_0, dp_i_1 + prices[i])
-        dp_i_1 = max(dp_i_1, temp - prices[i])
-    return dp_i_0
-
-# 每次sell之后要等一天才能继续交易
-def maxProfit_with_cool(prices):
-    n = len(prices)
-    dp_i_0 = 0
-    dp_i_1 = - float('inf')
-    dp_pre_0 = 0
-    for i in range(n):
-        temp = dp_i_0
-        dp_i_0 = max(dp_i_0, dp_i_1 + prices[i])
-        dp_i_1 = max(dp_i_1, dp_pre_0 - prices[i])
-        dp_pre_0 = temp
-    return dp_i_0
-
-# 每次交易要支付手续费
-def maxProfit_with_fee(prices, fee):
-    '''
-    dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i])
-    dp[i][1] = max(dp[i-1][1], dp[i-1][0] - prices[i])
-    '''
-    n = len(prices)
-    dp_i_0 = 0
-    dp_i_1 = - float('inf')
-    for i in range(n):
-        temp = dp_i_0
-        dp_i_0 = max(dp_i_0, dp_i_1 + prices[i])
-        dp_i_1 = max(dp_i_1, temp - prices[i] - fee)
-    return dp_i_0
-
+# 121.买卖股票的最佳时机
 def maxProfit_with_k_1(prices):
     n = len(prices)
     dp = [[0] * 2 for i in range(n)]
@@ -77,6 +38,52 @@ def maxProfit_with_k_1_optimized(prices):
     for i in range(n):
         dp_i_0 = max(dp_i_0, dp_i_1 + prices[i])
         dp_i_1 = max(dp_i_1, -prices[i])
+    return dp_i_0
+
+def maxProfit_k_inf(prices):
+    '''
+    dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i])
+    dp[i][1] = max(dp[i-1][1], dp[i-1][0] - prices[i])
+    '''
+    n = len(prices)
+    dp_i_0 = 0
+    dp_i_1 = - float('inf')
+    for i in range(n):
+        temp = dp_i_0
+        dp_i_0 = max(dp_i_0, dp_i_1 + prices[i])
+        dp_i_1 = max(dp_i_1, temp - prices[i])
+    return dp_i_0
+
+# 每次sell之后要等一天才能继续交易
+def maxProfit_with_cool(prices):
+    '''
+    dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i])
+    dp[i][1] = max(dp[i-1][1], dp[i-2][0] - prices[i])
+    '''
+    n = len(prices)
+    dp_i_0 = 0
+    dp_i_1 = - float('inf')
+    dp_pre_0 = 0
+    for i in range(n):
+        temp = dp_i_0
+        dp_i_0 = max(dp_i_0, dp_i_1 + prices[i])
+        dp_i_1 = max(dp_i_1, dp_pre_0 - prices[i])
+        dp_pre_0 = temp
+    return dp_i_0
+
+# 每次交易要支付手续费
+def maxProfit_with_fee(prices, fee):
+    '''
+    dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i])
+    dp[i][1] = max(dp[i-1][1], dp[i-1][0] - prices[i]- fee)
+    '''
+    n = len(prices)
+    dp_i_0 = 0
+    dp_i_1 = - float('inf')
+    for i in range(n):
+        temp = dp_i_0
+        dp_i_0 = max(dp_i_0, dp_i_1 + prices[i])
+        dp_i_1 = max(dp_i_1, temp - prices[i] - fee)
     return dp_i_0
 
 def maxProfit_k_any(max_k, prices):
