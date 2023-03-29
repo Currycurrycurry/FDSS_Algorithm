@@ -267,6 +267,50 @@ def preorder_loop(root):
                 stack.append(node.left)
     return ans
 
+def inorder_loop(root):
+    stack, res = [], []
+    curr = root
+    while curr or stack:
+        while curr:
+            stack.append(curr)
+            curr = curr.left
+        curr = stack.pop()
+        res.append(curr.val)
+        curr = curr.right
+    return res
+
+# 与中序的不同之处在于：
+# 中序遍历中，从栈中弹出的节点，其左子树是访问完了，可以直接访问该节点，然后接下来访问右子树。
+# 后序遍历中，从栈中弹出的节点，我们只能确定其左子树肯定访问完了，但是无法确定右子树是否访问过。
+# 因此，我们在后序遍历中，引入了一个prev来记录历史访问记录。
+# 当访问完一棵子树的时候，我们用prev指向该节点。
+# 这样，在回溯到父节点的时候，我们可以依据prev是指向左子节点，还是右子节点，来判断父节点的访问情况。
+
+def postorder_loop(root):
+    if not root:
+        return []
+    stack, res = [], []
+    prev = None # 用prev来记录访问历史，在回溯到父节点时，可以由此来判断，上一个访问的节点是否为右子树
+    while root or stack:
+        while root:
+            stack.append(root)
+            root = root.left
+        # 从栈中弹出的元素，左子树一定是访问完了的
+        root = stack.pop()
+        # 如果没有右子树，或者右子树访问完了，也就是上一个访问的节点是右子节点时
+        # 说明可以访问当前节点
+        if not root.right or root.right == prev:
+            res.append(root.val)
+            # 更新历史访问记录，这样回溯的时候父节点可以由此判断右子树是否访问完成
+            prev = root
+            root = None
+        else:
+            # 如果右子树没有被访问，那么将当前节点压栈，访问右子树
+            stack.append(root)
+            root = root.right
+    return res
+
+
             
 def mirror_preorder(root):
     return [root.val] + preorder(root.right) + preorder(root.left) if root else []
@@ -302,17 +346,7 @@ def inorder_normal(root):
     dfs(root, res)
     return res
 
-def inorder_loop(root):
-    stack, res = [], []
-    curr = root
-    while curr is not None or len(stack) > 0:
-        while curr is not None:
-            stack.append(curr)
-            curr = curr.left
-        curr = stack.pop()
-        res.append(curr.val)
-        curr = curr.right
-    return res
+
 
 def mirror_inorder(root):
     return inorder(root.right) + [root.val] + inorder(root.left) if root else []
@@ -536,7 +570,6 @@ def find_path(tree, num):
                 ret.append([p.val for p in path])
         path.pop()
         sums.pop()
-
     dfs(tree)
     return ret
 

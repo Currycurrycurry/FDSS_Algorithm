@@ -1,4 +1,4 @@
-# 1
+# 1 时间n 空间n
 def sortAndSearch(nums):
     nums = sorted(nums)
     duplicates = []
@@ -11,7 +11,7 @@ def sortAndSearch(nums):
 nums = [2,3,1,0,2,5,3]
 print(sortAndSearch(nums))
 
-# 2
+# 2 时间n 空间n
 def hashSearch(nums):
     duplicates, tmp_set = set(), set()
     for num in nums:
@@ -24,7 +24,7 @@ def hashSearch(nums):
 nums = [2,3,1,0,0,0,5,5,5,3]
 print(hashSearch(nums))
 
-# 3
+# 3 时间n 空间1
 def positionIndexSearch(nums):
     for index, num in enumerate(nums):
         if index == num:
@@ -38,7 +38,7 @@ def positionIndexSearch(nums):
 nums = [2,3,1,0,2,5,3]
 print(positionIndexSearch(nums))
 
-# 4
+# 4 时间n 空间n
 def bucketSearch(nums):
     if not nums:
         return -1
@@ -50,7 +50,7 @@ def bucketSearch(nums):
 nums = [2,3,1,0,2,5,3]
 print(bucketSearch(nums))
 
-# 5
+# 5 
 def binarySearch(nums):
     def recursion(nums, start, end):
         def count_range(nums, start, end):

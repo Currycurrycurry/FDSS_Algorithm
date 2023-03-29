@@ -5,7 +5,7 @@ def getFirstAppearOnceChar(s):
         if i in tmp:
             tmp[i] += 1
         else:
-            tmp[i] == 1
+            tmp[i] = 1
     for t in tmp.keys():
         if tmp[t] == 1:
             return t
