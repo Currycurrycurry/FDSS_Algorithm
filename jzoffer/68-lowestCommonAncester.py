@@ -24,7 +24,7 @@ def findLowestCommonAncester(root, node1, node2):
         if path1[i] == path2[i]:
             continue 
         else:
-            return path1[i-1]
+            return path1[i-1].val
     return path1[length - 1].val
 
 
