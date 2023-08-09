@@ -119,7 +119,7 @@ def intervalIntersection(self, firstList: List[List[int]], secondList: List[List
 ################### 问题七： 合理申请会议室【如果把每个会议的起始时间看做一个线段区间，那么题目就是让你求最多有几个重叠区间】 ###################
 # 【解决方案】：基于差分数组的思想，使用【扫描线技巧】扫描线的遍历过程，就是差分数组的遍历过程
 # 再使用双指针【按顺序】遍历开始数组和结束数组
-
+                                 
 # 253. 会议室 II
 def min_meeting_rooms(intervals) -> int:
     n = len(intervals)
@@ -131,7 +131,7 @@ def min_meeting_rooms(intervals) -> int:
     starts.sort()
     ends.sort()
     res = 0
-    count = 0
+    count = 0                                                                                
     i, j = 0, 0
     while i < n and j < n:
         if starts[i] < ends[j]:

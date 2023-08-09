@@ -11,7 +11,6 @@ def getRobotMovingRange(m, n, k):
         return sum_value <= k
     
     def helper(row, col):
-
         if 0 <= row <= m - 1 and 0 <= col <= n - 1 and canEnter(row, col) and not visited[row][col]:
             visited[row][col] = True
             return helper(row - 1, col) + helper(row + 1, col) +\

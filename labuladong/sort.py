@@ -127,10 +127,11 @@ def radixSort(arr):
         current_index += 1
 
 # 969. 煎饼排序
-
-def pancakeSort(self, arr: List[int]) -> List[int]:
+# 时间复杂度：O(n2)
+def pancakeSort(arr: List[int]) -> List[int]:
     ans = []
     for n in range(len(arr), 1, -1):
+        # 寻找最大饼的索引
         index = 0
         for i in range(n):
             if arr[i] > arr[index]:
@@ -138,10 +139,43 @@ def pancakeSort(self, arr: List[int]) -> List[int]:
         if index == n - 1:
             continue
         m = index
+        # 第一次翻转：将最大饼翻到最上面
         for i in range((m + 1) // 2):
             arr[i], arr[m - i] = arr[m - i], arr[i]  # 原地反转
+        # 第二次翻转：将最大饼翻到最下面
         for i in range(n // 2):
             arr[i], arr[n - 1 - i] = arr[n - 1 - i], arr[i]  # 原地反转
         ans.append(index + 1)
         ans.append(n)
     return ans
+
+def pancakeSort(arr) -> List[int]:
+    res = []
+    def get_max_index(n):
+        index = 0
+        for i in range(n):
+            if arr[i] > arr[index]:
+                index = i
+        return index
+    
+    def reverse(start, end):
+        while start < end:
+            arr[start], arr[end] = arr[end], arr[start]
+            start += 1
+            end -= 1
+
+    def helper(n):
+        if n == 1:
+            return 
+        index = get_max_index(n)
+        
+        reverse(0, index)
+        res.append(index + 1)
+
+        reverse(0, n - 1)
+        res.append(n)
+
+        helper(n - 1)
+    
+    helper(len(arr))
+    return res

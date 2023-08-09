@@ -131,12 +131,15 @@ def isValidBST3(root):
 '''
 def generateTrees(n):
     def generateTree(start, end):
+        # base case 
         if start > end:
             return [None,]
         all_trees = []
+        # iterate all root nodes, i
         for i in range(start, end+1):
             left_trees = generateTree(start, i-1)
             right_trees = generateTree(i+1, end)
+            # construct the tree
             for l in left_trees:
                 for r in right_trees:
                     root = Node(i)
@@ -190,6 +193,31 @@ def recoverBST(root):
             recover(node_list, root.right, count)
     recover(findTwoNodes(inorder(root)), root, 2)
 
+def recoverTree(self, root):
+    # 用两个变量x，y来记录需要交换的节点
+    self.x = None
+    self.y = None
+    self.pre = None
+    # 中序遍历二叉树，并比较上一个节点(pre)和当前节点的值，如果pre的值大于当前节点值，则记录下这两个节点
+    def dfs(root):
+        if not root:
+            return
+        dfs(root.left)
+        if not self.pre:
+            self.pre = root
+        else:
+            if self.pre.val>root.val:
+                self.y = root
+                if not self.x:
+                    self.x = self.pre
+            self.pre = root
+        dfs(root.right)
+    dfs(root)
+    # 如果x和y都不为空，说明二叉搜索树出现错误的节点，将其交换
+    if self.x and self.y:
+        self.x.val,self.y.val = self.y.val,self.x.val
+
+
 # 993. 二叉树的堂兄弟节点
 def isCousin(root, x, y):
     def getPath(root, val, path=[]):
@@ -242,7 +270,7 @@ def preorder_n(root):
     helper(root)
     return res
 
-# 迭代前序
+# 迭代前序 n叉树版
 def preorder_loop_n(root):
     if root:
         stack = [root]
@@ -254,6 +282,7 @@ def preorder_loop_n(root):
         return ans
     return []
 
+# 迭代前序 二叉树版
 def preorder_loop(root):
     ans = []
     if root:
@@ -267,10 +296,11 @@ def preorder_loop(root):
                 stack.append(node.left)
     return ans
 
-            
+# 镜像版前序遍历
 def mirror_preorder(root):
     return [root.val] + preorder(root.right) + preorder(root.left) if root else []
 
+# 判断BST是否是前序遍历
 def isPreorder(nums):
     length = len(nums)
     if nums:
