@@ -114,7 +114,6 @@ def fib(n):
         curr = sum
     return curr
 
-
 #################### 经典编辑距离问题 ####################
 # 【注意】：既然每个 dp[i][j] 只和它附近的三个状态有关，
 # 空间复杂度是可以压缩成 O(min(M, N)) 的（M，N 是两个字符串的长度）。
@@ -387,3 +386,34 @@ def minFallingPathSum(matrix) -> int:
             else:
                 dp[i][j] = min(dp[i-1][j], dp[i-1][j-1], dp[i-1][j+1]) + matrix[i][j]
     return min(dp[-1])
+
+# 115. 不同的子序列
+# 创建二维数组 dp\textit{dp}dp，其中 dp[i][j]\textit{dp}[i][j]dp[i][j] 表示在 s[i:]s[i:]s[i:] 的子序列中 t[j:]t[j:]t[j:] 出现的个数。
+def numDistinct(self, s: str, t: str) -> int:
+    m, n = len(s), len(t)
+    if m < n:
+        return 0
+    
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(m + 1):
+        dp[i][n] = 1
+    
+    for i in range(m - 1, -1, -1):
+        for j in range(n - 1, -1, -1):
+            if s[i] == t[j]:
+                dp[i][j] = dp[i + 1][j + 1] + dp[i + 1][j]
+            else:
+                dp[i][j] = dp[i + 1][j]
+    
+    return dp[0][0]
+
+# 139. 单词拆分
+def wordBreak(self, s: str, wordDict: List[str]) -> bool:       
+    n=len(s)
+    dp=[False]*(n+1)
+    dp[0]=True
+    for i in range(n):
+        for j in range(i+1,n+1):
+            if(dp[i] and (s[i:j] in wordDict)):
+                dp[j]=True
+    return dp[-1]

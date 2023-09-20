@@ -1,26 +1,3 @@
-# 【快速排序】就是个二叉树的【前序遍历】，【归并排序】就是个二叉树的【后序遍历】
-# 本质上是利用【递归的堆栈】帮你实现了【倒序遍历】的效果。
-###############
-# 二叉树题目的递归解法可以分两类思路，第一类是遍历一遍二叉树得出答案，
-# 第二类是通过分解问题计算出答案，这两类思路分别对应着 回溯算法核心框架 和 动态规划核心框架。
-###############
-# 【前中后序】是遍历二叉树过程中处理每一个节点的【三个特殊时间点】
-#【前序】执行：自顶向下
-# 前序位置的代码在刚刚进入一个二叉树节点的时候执行；
-# 前序位置的代码只能从【函数参数】中获取【父节点】传递来的数据
-# 本身其实没有什么特别的性质，之所以你发现好像很多题都是在前序位置写代码，
-# 实际上是因为我们习惯把那些对前中后序位置不敏感的代码写在前序位置罢了。
-# 【后序】执行：自底向上
-# 后序位置的代码在将要离开一个二叉树节点的时候执行；
-# 后序位置的代码不仅可以获取【参数数据】，还可以获取到【子树】通过【函数返回值】传递回来的数据。
-# 一旦你发现题目和【子树】有关，那大概率要给函数设置【合理的定义和返回值】，在【后序】位置写代码了。
-# 中序位置的代码在一个二叉树节点左子树都遍历完，即将开始遍历右子树的时候执行。
-###############
-# 【核心】二叉树的所有问题，就是让你在前中后序位置注入巧妙的代码逻辑，去达到自己的目的。
-# 你只需要单独思考每一个节点应该做什么，其他的不用你管。
-# 抛给二叉树遍历框架，递归会在所有节点上做相同的操作。
-
-
 # 普通二叉树节点-Node
 class Node:
     def __init__(self, val):
@@ -58,29 +35,128 @@ class Tree4Node:
         self.bottomLeft = bottomLeft
         self.bottomRight = bottomRight
 
+# 二叉树的序列化与反序列化
+def serialize(self, root):
+    """Encodes a tree to a single string.
+    
+    :type root: TreeNode
+    :rtype: str
+    """
+    if not root:
+        return '[]'
+    res = []
+    queue = collections.deque()
+    queue.append(root)
+    while queue:
+        node = queue.popleft()
+        if node:
+            queue.append(node.left)
+            queue.append(node.right)
+            res.append(str(node.val))
+        else:
+            res.append('null')
+    print(res)
+    return '[' + ','.join(res) + ']'
+
+
+def deserialize(self, data):
+    """Decodes your encoded data to tree.
+    
+    :type data: str
+    :rtype: TreeNode
+    """
+    if data == '[]': return None
+    res = data[1:-1].split(',')
+    for i,r in enumerate(res):
+        if r == 'null':
+            res[i] = None
+        else:
+            res[i] = int(res[i])
+
+    if len(res) == 0:
+        return None
+    index = 1
+    root = TreeNode(res[0])
+    queue = collections.deque()
+    queue.append(root)
+    while queue:
+        node = queue.popleft()
+        if res[index] != None:
+            node.left = TreeNode(res[index])
+            queue.append(node.left)
+        index += 1
+        if res[index] != None:
+            node.right = TreeNode(res[index])
+            queue.append(node.right)
+        index += 1
+    return root
+
+
+# 判断两棵树的关系：是否相同
+def isSameTree(root1, root2):
+    if not root1 and not root2:
+        return True
+    if not root1 or not root2:
+        return False
+    return root1.val == root2.val and isSameTree(root1.left, root2.left) and isSameTree(root1.right, root2.right)
+
+# 是否相似
+def isSimilarTree(root1, root2):
+    if not root1 and not root2:
+        return True
+    if not root1 or not root2:
+        return False
+    return isSimilarTree(root1.left, root2.left) and isSimilarTree(root1.right, root2.right)
+
+# 是否存在某个节点
+def ifExistNode(root, node):
+    if not root:
+        return False
+    if root == node:
+        return True
+    return ifExistNode(root.left, node) or ifExistNode(root.right, node)
+
+# 是否是包含关系的子树
+def hasSubTree(tree1, tree2):
+    if tree1 and tree2:
+        if tree1.val == tree2.val:
+            return hasSubTree(tree1.left, tree2.left) and hasSubTree(tree1.right, tree2.right)
+        else:
+            return hasSubTree(tree1.left, tree2) or hasSubTree(tree1.right, tree2)
+    if not tree1 and tree2:
+        return False
+    return True
+
+# 是否对称
+def isSymmetric(root):
+    def isSym(root1, root2):
+        if root1 is None and root2 is None:
+            return True
+        if root1 is None or root2 is None:
+            return False
+        return root1.val == root2.val and isSym(root1.left, root2.right) and isSym(root1.right, root2.left)
+    return isSym(root, root)
+
 # 104. 二叉树的最大深度
 def maxDepth(root):
     return 1 + max(maxDepth(root.left), maxDepth(root.right)) if root else 0
 
-# 222. 【完全二叉树】的节点总数
-# 【完全二叉树】Complete Binary Tree，每一层都是紧凑靠左排列的
-# 【满二叉树】Perfect Binary Tree，是一种特殊的完全二叉树，每层都是是满的，像一个稳定的三角形
-# 英文中的Full Binary Tree：指一棵二叉树的所有节点要么没有孩子节点，要么有两个孩子节点
-# 一棵完全二叉树的两棵子树，至少有一棵是满二叉树.
-def countNodes(root) -> int:
-    if not root:
-        return 0
-    left_height, right_height = 0, 0
-    left_node, right_node = root, root
-    while left_node:
-        left_node = left_node.left
-        left_height += 1
-    while right_node:
-        right_node = right_node.right
-        right_height += 1
-    if left_height == right_height:
-        return 2 ** left_height - 1
-    return 1 + countNodes(root.left) + countNodes(root.right)
+def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+    self.ans = 1
+    def depth(node):
+        # 访问到空节点了，返回0
+        if not node:
+            return 0
+        # 左儿子为根的子树的深度
+        L = depth(node.left)
+        # 右儿子为根的子树的深度
+        R = depth(node.right)
+        # 计算d_node即L+R+1 并更新ans
+        self.ans = max(self.ans, L + R + 1)
+        # 返回该节点为根的子树的深度
+        return max(L, R) + 1
+    depth(root)
+    return self.ans - 1
 
 # 98. 验证二叉搜索树-普通递归
 def isValidBST1(root):
@@ -120,7 +196,7 @@ def isValidBST3(root):
         root = root.right
     return True
 
-# （难）95. 不同的二叉搜索树（2）
+# （难）95. 不同的二叉搜索树（2）——需要给出所有的情况构成的数组（只能递归做）
 '''
 时间复杂度：
 卡特兰数：n个点生成的二叉搜索树的数目G(n)
@@ -131,15 +207,12 @@ def isValidBST3(root):
 '''
 def generateTrees(n):
     def generateTree(start, end):
-        # base case 
         if start > end:
             return [None,]
         all_trees = []
-        # iterate all root nodes, i
         for i in range(start, end+1):
             left_trees = generateTree(start, i-1)
             right_trees = generateTree(i+1, end)
-            # construct the tree
             for l in left_trees:
                 for r in right_trees:
                     root = Node(i)
@@ -149,7 +222,7 @@ def generateTrees(n):
         return all_trees
     return generateTree(1, n) if n > 0 else []
 
-# 96. 不同的二叉搜索树的个数(动态规划)
+# 96. 不同的二叉搜索树的个数(动态规划)——求个数的话可以DP
 '''
 假设n个节点存在二叉排序树的个数是G(n)，
 1为根节点，2为根节点，...，n为根节点，
@@ -165,7 +238,7 @@ def numTrees(n):
             G[i] += G[j] * G[i-j-1]
     return G[n]
 
-# 99. 恢复二叉搜索树
+# 99. 恢复二叉搜索树：把两个错误节点的值互相交换一下
 def recoverBST(root):
     def inorder(root):
         return inorder(root.left) + [root.val] + inorder(root.right) if root else []
@@ -192,31 +265,6 @@ def recoverBST(root):
             recover(node_list, root.left, count)
             recover(node_list, root.right, count)
     recover(findTwoNodes(inorder(root)), root, 2)
-
-def recoverTree(self, root):
-    # 用两个变量x，y来记录需要交换的节点
-    self.x = None
-    self.y = None
-    self.pre = None
-    # 中序遍历二叉树，并比较上一个节点(pre)和当前节点的值，如果pre的值大于当前节点值，则记录下这两个节点
-    def dfs(root):
-        if not root:
-            return
-        dfs(root.left)
-        if not self.pre:
-            self.pre = root
-        else:
-            if self.pre.val>root.val:
-                self.y = root
-                if not self.x:
-                    self.x = self.pre
-            self.pre = root
-        dfs(root.right)
-    dfs(root)
-    # 如果x和y都不为空，说明二叉搜索树出现错误的节点，将其交换
-    if self.x and self.y:
-        self.x.val,self.y.val = self.y.val,self.x.val
-
 
 # 993. 二叉树的堂兄弟节点
 def isCousin(root, x, y):
@@ -270,7 +318,7 @@ def preorder_n(root):
     helper(root)
     return res
 
-# 迭代前序 n叉树版
+# 迭代前序
 def preorder_loop_n(root):
     if root:
         stack = [root]
@@ -282,7 +330,6 @@ def preorder_loop_n(root):
         return ans
     return []
 
-# 迭代前序 二叉树版
 def preorder_loop(root):
     ans = []
     if root:
@@ -296,54 +343,16 @@ def preorder_loop(root):
                 stack.append(node.left)
     return ans
 
-# 前序遍历
-def inorder_loop(root):
-    stack, res = [], []
-    curr = root
-    while curr or stack:
-        while curr:
-            stack.append(curr)
-            curr = curr.left
-        curr = stack.pop()
-        res.append(curr.val)
-        curr = curr.right
-    return res
-
-# 与中序的不同之处在于：
-# 中序遍历中，从栈中弹出的节点，其左子树是访问完了，可以直接访问该节点，然后接下来访问右子树。
-# 后序遍历中，从栈中弹出的节点，我们只能确定其左子树肯定访问完了，但是无法确定右子树是否访问过。
-# 因此，我们在后序遍历中，引入了一个prev来记录历史访问记录。
-# 当访问完一棵子树的时候，我们用prev指向该节点。
-# 这样，在回溯到父节点的时候，我们可以依据prev是指向左子节点，还是右子节点，来判断父节点的访问情况。
-
-def postorder_loop(root):
-    if not root:
-        return []
-    stack, res = [], []
-    prev = None # 用prev来记录访问历史，在回溯到父节点时，可以由此来判断，上一个访问的节点是否为右子树
-    while root or stack:
-        while root:
-            stack.append(root)
-            root = root.left
-        # 从栈中弹出的元素，左子树一定是访问完了的
-        root = stack.pop()
-        # 如果没有右子树，或者右子树访问完了，也就是上一个访问的节点是右子节点时
-        # 说明可以访问当前节点
-        if not root.right or root.right == prev:
-            res.append(root.val)
-            # 更新历史访问记录，这样回溯的时候父节点可以由此判断右子树是否访问完成
-            prev = root
-            root = None
-        else:
-            # 如果右子树没有被访问，那么将当前节点压栈，访问右子树
-            stack.append(root)
-            root = root.right
-    return res
-
+def mirrorTree(self, root: TreeNode) -> TreeNode:
+    if root:
+        root.left, root.right = root.right, root.left
+        self.mirrorTree(root.left)
+        self.mirrorTree(root.right)
+        return root
+            
 def mirror_preorder(root):
     return [root.val] + preorder(root.right) + preorder(root.left) if root else []
 
-# 判断BST是否是前序遍历
 def isPreorder(nums):
     length = len(nums)
     if nums:
@@ -375,7 +384,17 @@ def inorder_normal(root):
     dfs(root, res)
     return res
 
-
+def inorder_loop(root):
+    stack, res = [], []
+    curr = root
+    while curr is not None or len(stack) > 0:
+        while curr is not None:
+            stack.append(curr)
+            curr = curr.left
+        curr = stack.pop()
+        res.append(curr.val)
+        curr = curr.right
+    return res
 
 def mirror_inorder(root):
     return inorder(root.right) + [root.val] + inorder(root.left) if root else []
@@ -489,47 +508,6 @@ def buildPreorderTree(nums):
     else:
         return False
 
-# 判断两棵树的关系
-def isSameTree(root1, root2):
-    if not root1 and not root2:
-        return True
-    if not root1 or not root2:
-        return False
-    return root1.val == root2.val and isSameTree(root1.left, root2.left) and isSameTree(root1.right, root2.right)
-
-def isSimilarTree(root1, root2):
-    if not root1 and not root2:
-        return True
-    if not root1 or not root2:
-        return False
-    return isSimilarTree(root1.left, root2.left) and isSimilarTree(root1.right, root2.right)
-
-def ifExistNode(root, node):
-    if not root:
-        return False
-    if root == node:
-        return True
-    return ifExistNode(root.left, node) or ifExistNode(root.right, node)
-
-# 剑指 Offer 26. 树的子结构
-def hasSubTree(tree1, tree2):
-    if tree1 and tree2:
-        if tree1.val == tree2.val:
-            return hasSubTree(tree1.left, tree2.left) and hasSubTree(tree1.right, tree2.right)
-        else:
-            return hasSubTree(tree1.left, tree2) or hasSubTree(tree1.right, tree2)
-    if not tree1 and tree2:
-        return False
-    return True
-
-def isSymmetric(root):
-    def isSym(root1, root2):
-        if root1 is None and root2 is None:
-            return True
-        if root1 is None or root2 is None:
-            return False
-        return root1.val == root2.val and isSym(root1.left, root2.right) and isSym(root1.right, root2.left)
-    return isSym(root, root)
 
 maxPath = -float('inf')
 # 后序遍历
@@ -600,24 +578,28 @@ def find_path(tree, num):
                 ret.append([p.val for p in path])
         path.pop()
         sums.pop()
+
     dfs(tree)
     return ret
 
-# 236. 二叉树的最近公共祖先
-# LCA问题
-# 最近公共祖先节点的左右子树一定分别包含着两个节点：
-def lowestCommonAncestor(self, root, p, q):
+# 68 the common ancester of the two node
+def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+    # base case
     if not root:
         return None
-    if root.val == p.val or root.val == q.val:
+    if root == p or root == q:
         return root
     left = self.lowestCommonAncestor(root.left, p, q)
     right = self.lowestCommonAncestor(root.right, p, q)
+    # 情况 1
     if left and right:
         return root
-    return left if left else right 
+    # 情况 2
+    if not left and not right:
+        return None
+    # 情况 3
+    return right if not left else left
 
-# the least common ancester(LCA) of the two node
 ## base case
 def findPath(root, node, path):
     if not root or not node:
@@ -813,7 +795,22 @@ class Solution:
         maxGain(root)
         return self.maxSum
 
-
+# 222. 完全二叉树的节点个数
+def countNodes(self, root: TreeNode) -> int:
+    def getHeight(node):
+        height = 0
+        while node:
+            node = node.left
+            height += 1
+        return height
+    if root:
+        left_height, right_height = getHeight(root.left), getHeight(root.right)
+        if left_height == right_height:
+            return (1 << left_height) + self.countNodes(root.right)
+        else:
+            return (1 << right_height) + self.countNodes(root.left)
+    else:
+        return 0
 
 ######################################TEST######################################
 nodes = [Node(i) for i in range(10)]

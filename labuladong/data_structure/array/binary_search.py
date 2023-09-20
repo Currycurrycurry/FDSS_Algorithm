@@ -1,3 +1,49 @@
+# 剑指 Offer 03. 数组中重复的数字：数组长度为n且所有数字都在0～n-1的范围内(不一定有重复)；找出【任意一个】重复数字
+# 最优：时间n(每个数字最多只要交换两次就能到自己的位置)；空间1
+def positionIndexSearch(nums):
+    for index, num in enumerate(nums):
+        if index == num:
+            continue
+        elif nums[num] == num:
+            return num
+        else:
+            nums[num], nums[index] = nums[index], nums[num]
+    return -1 # 没有遇到重复数字则返回-1
+
+# 剑指 Offer 03.下 数组中重复的数字：数组长度为n+1且所有数字都在1～n的范围内(不一定有重复)；找出【任意一个】重复数字
+# 最优：时间nlgn(基于二分查找的思路)；空间1
+def binarySearch(nums):
+    def recursion(nums, start, end):
+        def count_range(nums, start, end):
+            cnt = 0
+            for num in nums:
+                if start <= num <= end:
+                    cnt += 1
+            return cnt
+        if start == end: 
+            return start
+        mid = (start + end) // 2
+        if count_range(nums, start, mid) > (mid - start + 1):
+            return recursion(nums, start, mid)
+        if count_range(nums, mid + 1, end) > (end - mid):
+            return recursion(nums, mid + 1, end)
+    return recursion(nums, 1, len(nums) - 1)
+
+# 剑指 Offer 04. 二维数组中的查找
+# 起点为：右上角（左下同理）
+def search2Darray(matrix, num):
+    row_len = len(matrix)
+    col_len = len(matrix[0])
+    row_index, col_index = 0, col_len - 1
+    while row_index < row_len and col_index >= 0:
+        if num == matrix[row_index][col_index]:
+            return row_index, col_index
+        elif num < matrix[row_index][col_index]:
+            col_index -= 1
+        else:
+            row_index += 1
+    return -1
+
 from collections import defaultdict
 import bisect 
 # 二分查找本身不难理解，难在巧妙地运用二分查找技巧。
@@ -90,7 +136,6 @@ def right_bound(nums, target):
             left = mid + 1
         elif nums[mid] > target:
             right = mid
-        
     if left == 0:
         return -1
     return left - 1 if nums[left - 1] == target else -1
@@ -106,10 +151,8 @@ def right_bound2(nums, target):
             right = mid - 1
         elif nums[mid] == target:
             left = mid + 1
-        
     if right < 0 or nums[right] != target:
         return -1
-
     return right
 
 '''
@@ -126,7 +169,7 @@ def right_bound2(nums, target):
 （2）寻找左侧边界的二分查找
     
 
-# 34. 在排序数组中查找元素的第一个和最后一个位置
+# 34. 在排序数组中查找元素的第一个和最后一个位置 
 '''
 def searchRange(nums, target: int):
     def bs(nums, target, lower):
@@ -220,7 +263,6 @@ def splitArray(self, nums, k: int) -> int:
     return lo
 
 
-
 # 392. 判断子序列
 def isSubsequence(s: str, t: str) -> bool:
     i = 0
@@ -261,3 +303,28 @@ def isSubsequence(self, s: str, t: str) -> bool:
             return False
         res = pos_list[target]
     return True
+
+# 792. 匹配子序列的单词数
+def numMatchingSubseq(self, s: str, words: List[str]) -> int:
+    def get_preprocessed_t(t):
+        t_map = defaultdict(list)
+        for index, letter in enumerate(t):
+            t_map[letter].append(index)
+        return t_map
+    t_map = get_preprocessed_t(s)
+    def is_sub(s):
+        res = -1
+        for i, letter in enumerate(s):
+            if letter not in t_map.keys():
+                return False
+            pos_list = t_map[letter]
+            target = bisect.bisect_right(pos_list, res)
+            if target >= len(pos_list) or pos_list[target] <= res:
+                return False
+            res = pos_list[target]
+        return True
+    ans = 0
+    for word in words:
+        if is_sub(word, s):
+            ans += 1
+    return ans

@@ -179,7 +179,6 @@ def numWays(self, n: int) -> int:
 
 # 剑指 Offer 11. 旋转数组的最小数字
 # 时间复杂度Olgn(二分查找)
-# 
 def findMinNumTotallyRight(nums):
     def minInOrder(nums, index1, index2):
         res = nums[index1]
@@ -327,6 +326,30 @@ def myPow(x, n):
         return cal_postive_pow(x, n)
     else:
         return 1 / cal_postive_pow(x, -n)
+    
+class Solution:
+    def __init__(self):
+        self.base = 1337
+
+    # 计算 a 的 k 次方然后与 base 求模的结果
+    def mypow(self, a: int, k: int) -> int:
+        # 对因子求模
+        a %= self.base
+        res = 1
+        for _ in range(k):
+            # 这里有乘法，是潜在的溢出点
+            res = (res * a) % self.base
+        return res
+
+    def superPow(self, a: int, b: List[int]) -> int:
+        if not b:
+            return 1
+        last = b.pop()
+
+        part1 = self.mypow(a, last)
+        part2 = self.mypow(self.superPow(a, b), 10)
+        # 每次乘法都要求模
+        return (part1 * part2) % self.base
 
 # 剑指 Offer 17. 打印从1到最大的n位数
 # 需要考虑【大数问题】
@@ -434,54 +457,540 @@ def getKthFromEnd(head, k: int):
     return head
     
 # 剑指 Offer 24. 反转链表
+# （1）递归
+def reverseList(self, head):
+    # 链表为空或只有一个节点时，反转结果就是它自己
+    if not head or not head.next:
+        return head
+    # 反转当前节点之后的剩余部分
+    last = reverseList(head.next)
+    head.next.next = head # 核心动作
+    head.next = None
+    return last
+# （2）迭代
+def reverseList2(self, head):
+    prev = None
+    curr = head
+    nxt = head
+    while curr:
+        nxt = curr.next
+        curr.next = prev #逐个节点反转
+        prev = curr
+        curr = nxt
+    return prev # 返回反转后的头节点
 
+# 反转链表前N个节点
+# 重要区别1：base case 变为 n == 1，反转一个元素，就是它本身，同时要记录后驱节点。
+# 重要区别2：刚才我们直接把 head.next 设置为 null，因为整个链表反转后原来的 head 变成了整个链表的最后一个节点。
+# 但现在 head 节点在递归反转之后不一定是最后一个节点了，所以要记录后驱 successor（第 n + 1 个节点），反转之后将 head 连接上。
+successor = None
+def reverseN(head, n):
+    if n == 1:
+        # 记录第n+1个节点
+        successor = head.next
+        return head
+    # 以head.NEXT为起点反转前n-1个节点
+    last = reverseN(head.next, n - 1)
+    head.next.next = head # 核心动作
+    head.next = successor # 让反转之后的head节点和后面的节点连起来 
+    return last
+
+# 92.反转链表
+# （1）给出明确left节点和right节点
+def reverseBetween(left, right):
+    prev = None
+    curr = left
+    nxt = left
+    # while的终止条件加一个不等于right就行了
+    while curr != right:
+        nxt = curr.next
+        curr.next = prev #逐个节点反转
+        prev = curr
+        curr = nxt
+    return prev # 返回反转后的头节点
+
+# （2）给出数字index的范围
+successor = None
+def _reverseN(head, n):
+    if n == 1:
+        global successor
+        successor = head.next
+        return head
+    last = _reverseN(head.next, n - 1)
+    head.next.next = head
+    head.next = successor
+    return last
+
+def reverseBetween(head, left, right):
+    if left == 1:
+        return _reverseN(head, right)
+    head.next = reverseBetween(head.next, left - 1, right - 1)
+    return head
+
+# 25.K个一组翻转链表
+def reverse(headA, headB):
+    prev = None
+    curr = headA
+    nxt = headA
+    while curr != headB:
+        nxt = curr.next
+        curr.next = prev
+        prev = curr
+        curr = nxt
+    return prev
+def reverseKGroup(head, k):
+    if not head or not head.next:
+        return head
+    # 区间[A,B)包含k个待反转元素
+    headA, headB = head, head
+    for _ in range(k):
+        if headB:
+            headB = headB.next
+        else:
+            return head # 不足k个，不需要反转，直接返回head就行（base case）
+    # 反转前k个元素
+    new_head = reverse(headA, headB)
+    # 递归反转后续链表并且连接起来
+    headA.next = reverseKGroup(headB, k)
+    return new_head
 
 # 剑指 Offer 25. 合并两个和K个排序的链表
+# 21.合并两个有序列表
+# 拉拉链/蛋白酶合成蛋白质 
+# 虚拟头节点技巧
+def mergeTwoLists(list1, list2):
+    # 虚拟头节点
+    dummy_node = Node()
+    temp_p = dummy_node
+    # 比较list1和list2两个指针
+    # 将值较小的节点接到p指针
+    while list1 and list2:
+        if list1.val > list2.val:
+            temp_p.next = list2
+            list2 = list2.next
+        else:
+            temp_p.next = list1
+            list1 = list1.next
+        # p指针不断前进
+        temp_p = temp_p.next
+        
+    if list1:
+        temp_p.next = list1
+    if list2:
+        temp_p.next = list2
+    # 返回头节点
+    return dummy_node.next
+
+# 23. 合并K个升序链表
+# 难点：如何快速得到k个节点中的最小节点，接到结果链表上？
+# 优先队列（heapq），（基于二叉堆-最小堆，Python默认就是）自己构造HeapNode类
+# 时间复杂度： O(Nlogk)，其中 k 是链表的条数，N 是这些链表的节点总数。
+# 复杂度分析：优先队列heap中的元素个数最多是k，所以每一次pop和push的复杂度是logk
+# 所有节点都会被加入和弹出heap一次，所以总的复杂度是n * logk
+def mergeKLists(lists):
+    import heapq
+    heap = []
+    dummy_node = Node(-1) # 虚拟头节点技巧
+    pointer = dummy_node
+    # 将k个链表的头节点加入最小堆
+    for i in range(len(lists)):
+        if lists[i]:
+            heapq.heappush(heap, HeapNode(lists[i]))
+    while heap:
+        heap_pointer = heapq.heappop(heap).node # 获取最小节点
+        pointer.next = heap_pointer        # 接到结果链表上
+        if heap_pointer.next:
+            heapq.heappush(heap, HeapNode(heap_pointer.next)) # 把next补充进优先队列
+        # pointer指针不断前进
+        pointer = pointer.next
+    # 返回头节点
+    return dummy_node.next
 
 # 剑指 Offer 26. 树的子结构
+def hasSubTree(tree1, tree2):
+    if tree1 and tree2:
+        if tree1.val == tree2.val:
+            return hasSubTree(tree1.left, tree2.left) and hasSubTree(tree1.right, tree2.right)
+        else:
+            return hasSubTree(tree1.left, tree2) or hasSubTree(tree1.right, tree2)
+    if not tree1 and tree2:
+        return False
+    return True
 
 # 剑指 Offer 27. 二叉树的镜像
+def mirrorTree(self, root: TreeNode) -> TreeNode:
+    if root:
+        root.left, root.right = root.right, root.left
+        self.mirrorTree(root.left)
+        self.mirrorTree(root.right)
+        return root
 
 # 剑指 Offer 28. 对称的二叉树
+def isSymmetric(root):
+    def isSym(root1, root2):
+        if root1 is None and root2 is None:
+            return True
+        if root1 is None or root2 is None:
+            return False
+        return root1.val == root2.val and isSym(root1.left, root2.right) and isSym(root1.right, root2.left)
+    return isSym(root, root)
 
 
 # 剑指 Offer 29. 顺时针打印矩阵
+def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+    if not matrix or not matrix[0]:
+        return list()
+    
+    rows, columns = len(matrix), len(matrix[0])
+    order = list()
+    left, right, top, bottom = 0, columns - 1, 0, rows - 1
+    while left <= right and top <= bottom:
+        for column in range(left, right + 1):
+            order.append(matrix[top][column])
+        for row in range(top + 1, bottom + 1):
+            order.append(matrix[row][right])
+        if left < right and top < bottom:
+            for column in range(right - 1, left, -1):
+                order.append(matrix[bottom][column])
+            for row in range(bottom, top, -1):
+                order.append(matrix[row][left])
+        left, right, top, bottom = left + 1, right - 1, top + 1, bottom - 1
+    return order
 
 # 剑指 Offer 30. 包含min函数的栈
+class MinStack:
+    def __init__(self):
+        """
+        initialize your data structure here.
+        """
+        self.stack = []
+        self.min_stack = []
+    def push(self, x: int) -> None:
+        self.stack.append(x)
+        if self.min_stack:
+            if x < self.min_stack[-1]:
+                self.min_stack.append(x)
+            else:
+                self.min_stack.append(self.min_stack[-1])
+        else:
+            self.min_stack.append(x)
+    def pop(self) -> None:
+        self.stack.pop()
+        self.min_stack.pop()
+    def top(self) -> int:
+        return self.stack[-1]
+    def min(self) -> int:
+        return self.min_stack[-1]
+
 
 # 剑指 Offer 31. 栈的压入、弹出序列
+def validateStackSequences(self, pushed: List[int], popped: List[int]) -> bool:
+    if len(pushed) != len(popped):
+        return False
+    push_i = 0
+    pop_i = 0
+    stack = []
+    while push_i < len(pushed):
+        if pushed[push_i] != popped[pop_i]:
+            stack.append(pushed[push_i])
+            push_i += 1
+        else:
+            stack.append(pushed[push_i])
+            push_i += 1
+            pop_i += 1
+            stack.pop()
+            while stack and stack[-1] == popped[pop_i]:
+                stack.pop()
+                pop_i += 1
+    while pop_i < len(popped):
+        if popped[pop_i] == stack[-1]:
+            pop_i += 1
+            stack.pop()
+        else:
+            return False
+    return len(stack) == 0
 
 # 剑指 Offer 32 三题 从上到下打印二叉
+def levelOrder(self, root: TreeNode) -> List[int]:
+    if not root:
+        return []
+    queue = [root]
+    res = []
+    while queue:
+        size = len(queue)
+        for i in range(size):
+            node = queue.pop(0)
+            res.append(node.val)
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+    return res
 
 # 剑指 Offer 33. 二叉搜索树的后序遍
+def verifyPostorder(self, postorder: List[int]) -> bool:
+        if len(postorder) <= 1:
+            return True
+        root = postorder[-1]
+        left_index = 0
+        while left_index < len(postorder) - 1:
+            if postorder[left_index] < root:
+                left_index += 1
+            else:
+                break
+        right_index = left_index
+        while right_index < len(postorder) - 1:
+            if postorder[right_index] > root:
+                right_index += 1
+            else:
+                return False
+        return self.verifyPostorder(postorder[:left_index]) and self.verifyPostorder(postorder[left_index:right_index])
 
-# 剑指 Offer 34. 二叉树中和为某一
+# 剑指 Offer 34. 二叉树中和为某一值的路径
+def pathSum(self, root: TreeNode, sum_: int) -> List[List[int]]:
+    ret = []
+    if not root:
+        return ret
+    path = [root]
+    sums = [root.val]
+
+    def dfs(root):
+        if root.left:
+            path.append(root.left)
+            sums.append(sums[-1] + root.left.val)
+            dfs(root.left)
+        if root.right:
+            path.append(root.right)
+            sums.append(sums[-1] + root.right.val)
+            dfs(root.right)
+        if not root.left and not root.right:
+            if sums[-1] == sum_:
+                ret.append([p.val for p in path])
+        path.pop()
+        sums.pop()
+    
+    dfs(root)
+    return ret
 
 # 剑指 Offer 35. 复杂链表的复制
+def copyRandomList(self, head: 'Node') -> 'Node':
+    if not head: return head
+    cur = head
+    while cur:
+        new_node = Node(cur.val,None,None)   # 克隆新结点
+        new_node.next = cur.next
+        cur.next = new_node   # 克隆新结点在cur 后面
+        cur = new_node.next   # 移动到下一个要克隆的点
+    cur = head
 
-# 剑指 Offer 36. 二叉搜索树与双向
+    while cur:  # 链接random
+        cur.next.random = cur.random.next if cur.random else None
+        cur = cur.next.next
+
+    cur_old_list = head # 将两个链表分开
+    cur_new_list = head.next
+    new_head = head.next
+    while cur_old_list:
+        cur_old_list.next = cur_old_list.next.next
+        cur_new_list.next = cur_new_list.next.next if cur_new_list.next else None
+        cur_old_list = cur_old_list.next
+        cur_new_list = cur_new_list.next
+    return new_head
+
+# 剑指 Offer 36. 二叉搜索树与双向链表
+def treeToDoublyList(self, root: 'Node') -> 'Node':
+    def dfs(cur):
+        if not cur: return
+        dfs(cur.left) # 递归左子树
+        if self.pre: # 修改节点引用
+            self.pre.right, cur.left = cur, self.pre
+        else: # 记录头节点
+            self.head = cur
+        self.pre = cur # 保存 cur
+        dfs(cur.right) # 递归右子树
+    
+    if not root: return
+    self.pre = None
+    dfs(root)
+    self.head.left, self.pre.right = self.pre, self.head
+    return self.head
 
 # 剑指 Offer 37. 序列化二叉树
+def serialize(self, root):
+    """Encodes a tree to a single string.
+    
+    :type root: TreeNode
+    :rtype: str
+    """
+    if not root:
+        return '[]'
+    res = []
+    queue = collections.deque()
+    queue.append(root)
+    while queue:
+        node = queue.popleft()
+        if node:
+            queue.append(node.left)
+            queue.append(node.right)
+            res.append(str(node.val))
+        else:
+            res.append('null')
+    print(res)
+    return '[' + ','.join(res) + ']'
+
+
+def deserialize(self, data):
+    """Decodes your encoded data to tree.
+    
+    :type data: str
+    :rtype: TreeNode
+    """
+    if data == '[]': return None
+    res = data[1:-1].split(',')
+    for i,r in enumerate(res):
+        if r == 'null':
+            res[i] = None
+        else:
+            res[i] = int(res[i])
+
+    if len(res) == 0:
+        return None
+    index = 1
+    root = TreeNode(res[0])
+    queue = collections.deque()
+    queue.append(root)
+    while queue:
+        node = queue.popleft()
+        if res[index] != None:
+            node.left = TreeNode(res[index])
+            queue.append(node.left)
+        index += 1
+        if res[index] != None:
+            node.right = TreeNode(res[index])
+            queue.append(node.right)
+        index += 1
+    return root
 
 # 剑指 Offer 38. 字符串的排列
+class Solution:
+    res = []
+    #记录回溯算法的递归路径
+    track = []
+    # track 中的元素会被标记为 true
+    used = []
 
-# 剑指 Offer 39. 数组中出现次数超过
+    # 主函数，输入一组不重复的数字，返回它们的全排列
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        self.used = [False] * len(nums)
+        self.backtrack(nums)
+        return self.res
+
+    # 回溯算法核心函数
+    def backtrack(self, nums):
+        # base case，到达叶子节点
+        if len(self.track) == len(nums):
+            # 收集叶子节点上的值
+            self.res.append(self.track[:])
+            return
+
+        # 回溯算法标准框架
+        for i in range(len(nums)):
+            # 已经存在 track 中的元素，不能重复选择
+            if self.used[i]:
+                continue
+            # 做选择
+            self.used[i] = True
+            self.track.append(nums[i])
+            # 进入下一层回溯树
+            self.backtrack(nums)
+            # 取消选择
+            self.track.remove(nums[i])
+            self.used[i] = False
+
+# 剑指 Offer 39. 数组中出现次数超过一半的数字
+def majorityElement(self, nums: List[int]) -> int:
+    counts = collections.Counter(nums)
+    return max(counts.keys(), key=counts.get)
 
 # 剑指 Offer 40. 最小的k个数
+import heapq
+def getLeastNumbers(self, arr: List[int], k: int) -> List[int]:
+    if k == 0:
+        return list()
+
+    hp = [-x for x in arr[:k]]
+    heapq.heapify(hp)
+    for i in range(k, len(arr)):
+        if -hp[0] > arr[i]:
+            heapq.heappop(hp)
+            heapq.heappush(hp, -arr[i])
+    ans = [-x for x in hp]
+    return ans
 
 # 剑指 Offer 41. 数据流中的中位数
+class MedianFinder:
+    def __init__(self):
+        self.A = [] # small heap  bigger part heapq默认是小的！
+        self.B = []# big heap smaller part
+    
+    def add_num(self, num):
+        if len(self.A) != len(self.B):
+            heapq.heappush(self.A, num)
+            heapq.heappush(self.B, -heapq.heappop(self.A))
+        else:
+            heapq.heappush(self.B, -num)
+            heapq.heappush(self.A, -heapq.heappop(self.B))
+    
+    def find_median(self):
+        return self.A[0] if len(self.A) != len(self.B) else (self.A[0] - self.B[0]) / 2.0
+     
 
 # 剑指 Offer 42. 连续子数组的最大和
+# 53. 最大子数组和——优化之后的DP做法
+def maxSubArray(self, nums) -> int:
+    dp_0, dp_1 = nums[0], 0 
+    res = dp_0
+    for i in range(1, len(nums)):
+        dp_1 = max(nums[i], dp_0 + nums[i])
+        dp_0 = dp_1
+        res = max(dp_0, res)
+    return res
 
 # 剑指 Offer 43. 1～n 整数中 1 出现的
-
+def countDigitOne(self, n: int) -> int:
+    digit, res = 1, 0
+    high, cur, low = n // 10, n % 10, 0
+    while high != 0 or cur != 0:
+        if cur == 0: res += high * digit
+        elif cur == 1: res += high * digit + low + 1
+        else: res += (high + 1) * digit
+        low += cur * digit
+        cur = high % 10
+        high //= 10
+        digit *= 10
+    return res
 # 剑指 Offer 44. 数字序列中某一位的
+def findNthDigit(self, n: int) -> int:
+    start, digit, cnt = 1, 1, 9
+    while n - cnt > 0:
+        n -= cnt
+        start *= 10
+        digit += 1
+        cnt = 9 * start * digit
+    num = start + (n - 1) // digit
+    return int(str(num)[(n-1) % digit])
 
 # 剑指 Offer 46. 把数字翻译成字符串
 
 
 # 剑指 Offer 47. 礼物的最大价值
-
+def maxValue(grid) -> int:
+    m, n = len(grid), len(grid[0])
+    val = [([0] * (n + 1)) for _ in range(m + 1)]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            val[i][j] = max(val[i - 1][j], val[i][j - 1]) + grid[i - 1][j - 1]
+    return val[m][n]
 
 # 剑指 Offer 48. 最长不含重复字符的
 def lengthOfLongestSubstring(self, s: str) -> int:
@@ -527,6 +1036,36 @@ def firstUniqChar(s: str) -> str:
     return ' '
 
 # 剑指 Offer 51. 数组中的逆序对
+def mergeSort(self, nums, tmp, l, r):
+    if l >= r:
+        return 0
+
+    mid = (l + r) // 2
+    inv_count = self.mergeSort(nums, tmp, l, mid) + self.mergeSort(nums, tmp, mid + 1, r)
+    i, j, pos = l, mid + 1, l
+    while i <= mid and j <= r:
+        if nums[i] <= nums[j]:
+            tmp[pos] = nums[i]
+            i += 1
+            inv_count += (j - (mid + 1))
+        else:
+            tmp[pos] = nums[j]
+            j += 1
+        pos += 1
+    for k in range(i, mid + 1):
+        tmp[pos] = nums[k]
+        inv_count += (j - (mid + 1))
+        pos += 1
+    for k in range(j, r + 1):
+        tmp[pos] = nums[k]
+        pos += 1
+    nums[l:r+1] = tmp[l:r+1]
+    return inv_count
+
+def reversePairs(self, nums: List[int]) -> int:
+    n = len(nums)
+    tmp = [0] * n
+    return self.mergeSort(nums, tmp, 0, n - 1)
 
 # 剑指 Offer 52. 两个链表的第一个公共节点
 def getIntersectionNode(headA, headB):
@@ -543,8 +1082,6 @@ def getIntersectionNode(headA, headB):
             pointer_b = headA
     return pointer_a
 
-
-
 # 剑指 Offer 53 - II. 0～n-1中缺失的数字
 def missingNumber(self, nums: List[int]) -> int:
     i, j = 0, len(nums) - 1
@@ -555,24 +1092,124 @@ def missingNumber(self, nums: List[int]) -> int:
     return i
 
 # 54 二叉搜索树的第K大节点
+def kthLargest(self, root: TreeNode, k: int) -> int:
+    def dfs(root):
+        if not root: return
+        dfs(root.right)
+        if self.k == 0: return
+        self.k -= 1
+        if self.k == 0: self.res = root.val
+        dfs(root.left)
+
+    self.k = k
+    dfs(root)
+    return self.res
 
 # 55 二叉树的深度
+def maxDepth(root):
+    return 1 + max(maxDepth(root.left), maxDepth(root.right)) if root else 0
 
 # 56 数组中数字出现的次数
+def singleNumbers(self, nums: List[int]) -> List[int]:
+    ret = functools.reduce(lambda x, y: x ^ y, nums)
+    div = 1
+    while div & ret == 0:
+        div <<= 1
+    a, b = 0, 0
+    for n in nums:
+        if n & div:
+            a ^= n
+        else:
+            b ^= n
+    return [a, b]
 
 # 57 和为s的数字
+def twoSum(self, nums: List[int], target: int) -> List[int]:
+    left_pointer, right_pointer = 0, len(nums) - 1
+    while left_pointer < right_pointer:
+        sum_value = nums[left_pointer] + nums[right_pointer]
+        if sum_value < target:
+            left_pointer += 1
+        elif sum_value > target:
+            right_pointer -= 1
+        else:
+            return [nums[left_pointer], nums[right_pointer]] 
 
 # 58 翻转字符串
 
 # 59 队列的最大值
+class MaxQueue:
+
+    def __init__(self):
+        self.max_queue = collections.deque()
+        self.window = collections.deque()
+
+    def max_value(self) -> int:
+        if len(self.max_queue) == 0:
+            return -1
+        return self.max_queue[0]
+
+    def push_back(self, value: int) -> None:
+        while self.max_queue and value > self.max_queue[-1]:
+            self.max_queue.pop()
+        self.window.append(value)
+        self.max_queue.append(value)
+
+    def pop_front(self) -> int:
+        if len(self.window) == 0:
+            return -1
+        val = self.window[0]
+        if val == self.max_queue[0]:
+            self.max_queue.popleft()
+        return self.window.popleft()
+
 
 # 60 n个骰子的点数
+def dicesProbability(self, n: int) -> List[float]:
+    dp = [1 / 6] * 6
+    for i in range(2, n + 1):
+        tmp = [0] * (5 * i + 1)
+        for j in range(len(dp)):
+            for k in range(6):
+                tmp[j + k] += dp[j] / 6
+        dp = tmp
+    return dp
 
 # 61 扑克牌中的顺子
+def isStraight(self, numbers: List[int]) -> bool:
+    if not numbers or len(numbers) != 5:
+        return False
+    numbers.sort()
+    zero_num = 0
+    pre_num = 0
+    for index, value in enumerate(numbers):
+        if value == 0:
+            zero_num += 1
+        elif pre_num == value:
+            return False
+        else:
+            pre_num = value
+    for i in range(zero_num + 1, len(numbers)):
+        if (numbers[i] - numbers[i - 1]) > zero_num + 1:
+            return False
+    return True
 
 # 62 圆圈中最后剩下的数字
+def lastRemaining(self, n: int, m: int) -> int:
+    # return 0 if n == 1 else (self.lastRemaining(n - 1, m) + m) % n
+    last = 0
+    for i in range(2, n+1):
+        last = (last + m) % i;
+    return last
 
 # 63 股票的最大利润
+def maxProfit(self, prices: List[int]) -> int:
+    cost, profit = float("+inf"), 0
+    for price in prices:
+        cost = min(cost, price)
+        profit = max(profit, price - cost)
+    return profit
+
 
 # 64 求1+2+……+n
 
@@ -690,15 +1327,15 @@ print(stay_in_map_probability(n, m, i, j, x))
 # input: {(a_n, b_n)}
 # output: the best x to fit the distribution
 
-import numpy as np
-def gradient_decsent(input_data, iteration_rounds, learning_rate):
-    # initialize the x 
-    X = np.rand(0, 1)
-    # do gd 
-    for _ in range(iteration_rounds):
-        for a, b in input_data: # or mini-batch 
-            delta_x = np.dot(np.reverse(a), b) 
-            X -= learning_rate * delta_x
-    return X
+
     
 
+def leastInterval(self, tasks: List[str], n: int) -> int:
+    counter = collections.Counter(tasks)
+    print(counter)
+    _, max_value = max(counter.items(), key=lambda x: x[1])
+    print(max_value)
+    max_diff_cnt = list(counter.values()).count(max_value)
+    print(max_diff_cnt)
+    length = (max_value - 1) * (n + 1) + max_diff_cnt
+    return length if length > len(tasks) else len(tasks)

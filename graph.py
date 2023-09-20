@@ -1,5 +1,5 @@
 # 【最短路径问题】题型整理
-# Sort
+
 from collections import defaultdict
 
 # 拓扑排序
@@ -25,16 +25,6 @@ class Graph:
         self.topoSortRecursively(i, visited, stack)
 
     print(stack)
-
-g= Graph(6) 
-g.addEdge(5, 2) 
-g.addEdge(5, 0) 
-g.addEdge(4, 0) 
-g.addEdge(4, 1) 
-g.addEdge(2, 3) 
-g.addEdge(3, 1)
-
-g.topoSort()
 
 # DFS找到一条从start到end的路径
 def findPath(graph,start,end,path=[]):   
@@ -67,7 +57,6 @@ def findShortestPath(graph,start,end,path=[]):
     path = path +[start]
     if start == end:
         return path
-    
     shortestPath = []
     for node in graph[start]:
         if node not in path:
@@ -77,40 +66,7 @@ def findShortestPath(graph,start,end,path=[]):
                     shortestPath = newpath
     return shortestPath
 
-
-graph = [
-    [1, 2],
-    [2, 3],
-    [3, 4],
-    [4],
-    []
-]
-
-print('dfs:')
-for i in range(5):
-    for j in range(5):
-        print('find one path from {i} to {j}: {ans}'.format(i=i, j=j, ans=findPath(graph, i, j)))
-        print('find all paths from {i} to {j}: {ans}'.format(i=i, j=j, ans=findAllPath(graph, i, j)))
-        print('find shortest path from {i} to {j}: {ans}'.format(i=i, j=j, ans=findShortestPath(graph, i, j)))
-
-
-def __dfs(self, candidates, begin, size, path, res, target):
-    # 先写递归终止的情况
-    if target == 0:
-        # Python 中可变对象是引用传递，因此需要将当前 path 里的值拷贝出来
-        # 或者使用 path.copy()
-        res.append(path[:])
-
-    for index in range(begin, size):
-        residue = target - candidates[index]
-        # “剪枝”操作，不必递归到下一层，并且后面的分支也不必执行
-        if residue < 0:
-            break
-        path.append(candidates[index])
-        # 因为下一层不能比上一层还小，起始索引还从 index 开始
-        self.__dfs(candidates, index, size, path, res, residue)
-        path.pop()
-
+# 并查集
 class UnionFind(object):
     '''union find set'''
     def __init__(self, n):
